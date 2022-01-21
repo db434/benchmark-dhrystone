@@ -48,29 +48,27 @@ Enumeration     Func_1 ();
 
 /* variables for time measurement: */
 
-#ifdef TIMES
-struct tms      time_info;
-extern  int     times ();
-                /* see library function "times" */
-#define Too_Small_Time (2*HZ)
-                /* Measurements should last at least about 2 seconds */
-#endif
-#ifdef TIME
-extern long     time();
-                /* see library function "time"  */
-#define Too_Small_Time 0//2
-                /* Measurements should last at least 2 seconds */
-#endif
-#ifdef MSC_CLOCK
-extern clock_t	clock();
-#define Too_Small_Time (2*HZ)
-#endif
+uint64_t cycle_count() {
+  uint64_t result;
+  CSR_READ(mcycle, result);
+  return result;
+}
+
+void start_timer(void) {
+  // Disable counter, reset counter to 0, enable counter.
+  pcount_enable(0);
+  pcount_reset();
+  pcount_enable(1);
+}
+
+#define Too_Small_Time 0
 
 long            Begin_Time,
                 End_Time,
                 User_Time;
-float           Microseconds,
-                Dhrystones_Per_Second;
+float           Clock_Cycles,
+                Dhrystones_Per_MHz,
+                DMIPS_Per_MHz;
 
 /* end of variables for time measurement */
 
@@ -141,16 +139,8 @@ main ()
   /* Start timer */
   /***************/
  
-#ifdef TIMES
-  times (&time_info);
-  Begin_Time = (long) time_info.tms_utime;
-#endif
-#ifdef TIME
-  Begin_Time = time ( (long *) 0);
-#endif
-#ifdef MSC_CLOCK
-  Begin_Time = clock();
-#endif
+  start_timer();
+  Begin_Time = cycle_count();
 
   for (Run_Index = 1; Run_Index <= Number_Of_Runs; ++Run_Index)
   {
@@ -202,16 +192,7 @@ main ()
   /* Stop timer */
   /**************/
   
-#ifdef TIMES
-  times (&time_info);
-  End_Time = (long) time_info.tms_utime;
-#endif
-#ifdef TIME
-  End_Time = time ( (long *) 0);
-#endif
-#ifdef MSC_CLOCK
-  End_Time = clock();
-#endif
+  End_Time = cycle_count();
 
   printf ("Execution ends\n");
   printf ("\n");
@@ -275,23 +256,19 @@ main ()
     printf ("\n");
   }
   else
-  {
-#ifdef TIME
-    Microseconds = (float) User_Time * Mic_secs_Per_Second 
-                        / (float) Number_Of_Runs;
-    Dhrystones_Per_Second = (float) Number_Of_Runs / (float) User_Time;
-#else
-    Microseconds = (float) User_Time * Mic_secs_Per_Second 
-                        / ((float) HZ * ((float) Number_Of_Runs));
-    Dhrystones_Per_Second = ((float) HZ * (float) Number_Of_Runs)
-                        / (float) User_Time;
-#endif
-    printf ("Microseconds for one run through Dhrystone: ");
-    //printf ("%6.1f \n", Microseconds);
-    printf ("%d \n", (int)Microseconds);
-    printf ("Dhrystones per Second:                      ");
-    //printf ("%6.1f \n", Dhrystones_Per_Second);
-    printf ("%d \n", (int)Dhrystones_Per_Second);
+  {                        
+    Clock_Cycles = (float) User_Time / (float) Number_Of_Runs;
+    Dhrystones_Per_MHz = (float) Number_Of_Runs / ((float) User_Time / 1000000.0f);
+    
+    /* Divide by the results from the VAX 11/780, a "1 MIPS machine". */
+    DMIPS_Per_MHz = Dhrystones_Per_MHz / 1757;
+
+    printf ("Clock cycles for one run through Dhrystone: ");
+    printf ("%d \n", (int)Clock_Cycles);
+    printf ("Dhrystones per MHz:                         ");
+    printf ("%d \n", (int)Dhrystones_Per_MHz);
+    printf ("DMIPS per MHz:                              ");
+    printf ("%f \n", DMIPS_Per_MHz);
     printf ("\n");
   }
   

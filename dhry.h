@@ -346,29 +346,7 @@
 
 /* Compiler and system dependent definitions: */
 
-#ifndef TIME
-#undef TIMES
-#define TIMES
-#endif
-                /* Use times(2) time function unless    */
-                /* explicitly defined otherwise         */
-
-#ifdef MSC_CLOCK
-#undef HZ
-#undef TIMES
-#include <time.h>
-#define HZ	CLK_TCK
-#endif
-		/* Use Microsoft C hi-res clock */
-
-#ifdef TIMES
-#include <sys/types.h>
-#include <sys/times.h>
-                /* for "times" */
-#endif
-
-#define Mic_secs_Per_Second     1000000
-                /* Berkeley UNIX C returns process times in seconds/HZ */
+#include <machine/cregs.h>
 
 #ifdef  NOSTRUCTASSIGN
 #define structassign(d, s)      memcpy(&(d), &(s), sizeof(d))

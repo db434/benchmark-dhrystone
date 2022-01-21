@@ -10,7 +10,7 @@ CC = $(RISCV_PREFIX)-gcc -specs baremetal.specs
 
 DHRY-LFLAGS =
 
-DHRY-CFLAGS := -O3 -DTIME -DNOENUM -Wno-implicit
+DHRY-CFLAGS := -O3 -DNOENUM -Wno-implicit
 DHRY-CFLAGS += -fno-common -falign-functions=4
 
 #Uncomment below for FPGA run, default DHRY_ITERS is 2000 for RTL
