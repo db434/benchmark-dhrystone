@@ -13,6 +13,16 @@ DHRY-LFLAGS =
 DHRY-CFLAGS := -O3 -DNOENUM -Wno-implicit
 DHRY-CFLAGS += -fno-common -falign-functions=4
 
+# Borrowed from CoreMark
+DHRY-CFLAGS += \
+  -funroll-loops -flto -funswitch-loops \
+  -falign-jumps=4 -falign-loops=4 \
+  -finline-functions --param max-inline-insns-auto=20 \
+  -mstrict-align
+
+# Unhelpful:
+#  -ffreestanding
+
 #Uncomment below for FPGA run, default DHRY_ITERS is 2000 for RTL
 #DHRY-CFLAGS += -DDHRY_ITERS=20000000
 
