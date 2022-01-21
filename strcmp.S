@@ -9,6 +9,8 @@
    http://www.opensource.org/licenses.
 */
 
+#define __riscv_xlen 64
+
 #if __riscv_xlen == 64
 # define PTRLOG 3
 # define SZREG	8

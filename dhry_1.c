@@ -16,6 +16,8 @@
  */
 
 #include "dhry.h"
+#include <stdlib.h>
+#include <string.h>
 
 #ifndef DHRY_ITERS
 #define DHRY_ITERS 2000
@@ -32,7 +34,6 @@ char            Ch_1_Glob,
 int             Arr_1_Glob [50];
 int             Arr_2_Glob [50] [50];
 
-extern char     *malloc ();
 Enumeration     Func_1 ();
   /* forward declaration necessary since Enumeration may not simply be int */
 
@@ -57,7 +58,7 @@ extern  int     times ();
 #ifdef TIME
 extern long     time();
                 /* see library function "time"  */
-#define Too_Small_Time 2
+#define Too_Small_Time 0//2
                 /* Measurements should last at least 2 seconds */
 #endif
 #ifdef MSC_CLOCK
@@ -229,7 +230,7 @@ main ()
   printf ("Arr_2_Glob[8][7]:    %d\n", Arr_2_Glob[8][7]);
   printf ("        should be:   Number_Of_Runs + 10\n");
   printf ("Ptr_Glob->\n");
-  printf ("  Ptr_Comp:          %d\n", (int) Ptr_Glob->Ptr_Comp);
+  printf ("  Ptr_Comp:          %d\n", (long long int) Ptr_Glob->Ptr_Comp);
   printf ("        should be:   (implementation-dependent)\n");
   printf ("  Discr:             %d\n", Ptr_Glob->Discr);
   printf ("        should be:   %d\n", 0);
@@ -240,7 +241,7 @@ main ()
   printf ("  Str_Comp:          %s\n", Ptr_Glob->variant.var_1.Str_Comp);
   printf ("        should be:   DHRYSTONE PROGRAM, SOME STRING\n");
   printf ("Next_Ptr_Glob->\n");
-  printf ("  Ptr_Comp:          %d\n", (int) Next_Ptr_Glob->Ptr_Comp);
+  printf ("  Ptr_Comp:          %d\n", (long long int) Next_Ptr_Glob->Ptr_Comp);
   printf ("        should be:   (implementation-dependent), same as above\n");
   printf ("  Discr:             %d\n", Next_Ptr_Glob->Discr);
   printf ("        should be:   %d\n", 0);
